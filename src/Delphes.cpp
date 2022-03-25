@@ -18,10 +18,6 @@ using namespace std;
 
 class MyTLorentzVector : public TLorentzVector{
    public:
-   // MyTLorentzVector(double x, double y, double z, double t){
-   //    this->SetXYZT(x, y, z, t);
-   // };
-   // ~MyTLorentzVector(){};
    Bool_t m_IsBTagged;
    void Vypis2(){
       cout <<"IsBTagged" << m_IsBTagged <<endl;
@@ -64,7 +60,7 @@ class Event{
    }
 };
 
-void Delphes::Loop(TString Output, TString Tag, int NEvents)
+void Delphes::Loop(TString Output, TString Tag, int NEvents) 
 {
 
 
@@ -92,6 +88,8 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch   
+   
+   
    if (fChain == 0) return;
    
    Long64_t nentries;
@@ -114,13 +112,22 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    Events->cd();
    TTree *tree_signal = new TTree("Signal_Events","Signal_Events");
    
+   //ElectronBranch//
+   
    float Electron1_Data_PT;
    tree_signal->Branch("Electron1_Data_PT", &Electron1_Data_PT ,"Electron1_Data_PT/F");
    
    float Electron1_Data_Eta;
    tree_signal->Branch("Electron1_Data_Eta", &Electron1_Data_Eta,"Electron1_Data_Eta/F");
 
+   //MuonsBranch//
 
+   float Muon1_Data_Eta;
+   tree_signal->Branch("Muon1_Data_Eta", &Muon1_Data_Eta,"Muon1_Data_Eta/F");
+   
+   float Muon1_Data_PT;
+   tree_signal->Branch("Muon1_Data_PT", &Muon1_Data_PT ,"Muon1_Data_PT/F");
+   
 
 
 
@@ -131,7 +138,6 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
  if (jentry % 100 == 0){
    cout << "Processing: " << jentry/100 << " \%"<< endl;
    }
@@ -143,9 +149,15 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    
    }
 
+   for (int m = 0; m<kMaxMuon; m++) {
+      Muon1_Data_PT = Muon_PT[m];
+      Muon1_Data_Eta = Muon_Eta[m];
+      tree_signal->Fill();
+
    }
 
 tree_signal->Write();
 OutFile->Write();
 
+}
 }
