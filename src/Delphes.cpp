@@ -15,37 +15,6 @@
 #include <vector>
 using namespace std;
 
-class Zamestnanec{
-   public:
-   
-   TString Jmeno;
-   double Plat;
-   int PocetMilenek;
-   void Vypis(){
-      cout <<"Jmeno je:"<< Jmeno << endl;
-      cout <<"Plat je:"<< Plat << endl;
-      cout <<"Pocek Milenek je:"<< PocetMilenek << endl;
-               }
-   Zamestnanec(TString jmeno = "default", double plat = 1, int pocetmilenek = 0){
-      Jmeno = jmeno;
-      Plat = plat;
-      PocetMilenek = pocetmilenek;
-   };
-   ~Zamestnanec(){};
-   
-   
-   void NavyseniMilenek(int a){
-      // sloyitejsi // PocetMilenek = PocetMilenek + a;
-      PocetMilenek += a;
-   }
-   
-
-
-   
-
-
-
-};
 
 class MyTLorentzVector : public TLorentzVector{
    public:
@@ -100,56 +69,6 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
 
 
    
-   /*prvni = new Event();
-   prvni->electron.SetXYZT(3, 7, 4, 10);
-   prvni->antielectron.SetXYZT(-3, 7, 4, 10);
-   prvni->Vypis3();*/
-
-
-   //MyTLorentzVector a;
-   //a.SetPtEtaPhiE(1,1,1,1);
-   //a.m_IsBTagged = true;
-   
-/*
-   Zamestnanec Vojta;
-   Vojta.Jmeno="VojtaFluger";
-   Vojta.Plat=10000;
-   Vojta.PocetMilenek=0;
-
-   Zamestnanec *Vojta2 = new Zamestnanec("VojtaFluger", 10000, 0);
-   //Vojta2->Jmeno="VojtaFluger";
-   //Vojta2->Plat=10000;
-   //Vojta2->PocetMilenek=0;
-   Vojta2->Vypis();
-   Zamestnanec *Vojta3 = new Zamestnanec();
-   Vojta3->Vypis();
-
-   Vojta.Vypis();
-   //Vojta.NavyseniMilenek(3);
-   //Vojta.Vypis()//;
-
-   TLorentzVector *el1 = new TLorentzVector(5, 12, 50, 4);
-      
-   cout <<"Hmota:" << el1->M() <<endl;
-
-   MyTLorentzVector *el2 = new MyTLorentzVector(5, 12, 50, 4);
-      
-   //cout <<"Hmota:" << el2->M() <<endl;
-   el2->m_IsBTagged = true;
-   el2->Vypis2();
-   
-   //Zamestnanec Pepa;
-   //Pepa.Jmeno="PepaNovak";
-   //Pepa.Plat=100000;
-   //Pepa.PocetMilenek=2;
-
-   //Pepa.Vypis();
-
-   //Zamestnanec VojtoPepa = Vojta + Pepa;
-//
-   //VojtoPepa.Vypis();
-   //a.Vypis2();
-*/
 //   In a ROOT session, you can do:
 //      root> .L Delphes.C
 //      root> Delphes t
@@ -217,8 +136,7 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    cout << "Processing: " << jentry/100 << " \%"<< endl;
    }
 
-   for (int i = 0; i<Electron_PT.size(); i++) {
-      //cout <<"funguje 1"<<Electron_PT[0]<<endl;
+    for (int i = 0; i<kMaxElectron; i++) {
       Electron1_Data_PT = Electron_PT[i];
       Electron1_Data_Eta = Electron_Eta[i];
       tree_signal->Fill();
