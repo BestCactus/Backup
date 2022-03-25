@@ -217,7 +217,7 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    cout << "Processing: " << jentry/100 << " \%"<< endl;
    }
 
-   for (int i = 0; i<Electron_PT.size(); i++) {
+   for (int i = 0; i<kMaxElectron; i++) {
       //cout <<"funguje 1"<<Electron_PT[0]<<endl;
       Electron1_Data_PT = Electron_PT[i];
       Electron1_Data_Eta = Electron_Eta[i];
