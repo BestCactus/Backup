@@ -127,11 +127,43 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    
    float Muon1_Data_PT;
    tree_signal->Branch("Muon1_Data_PT", &Muon1_Data_PT ,"Muon1_Data_PT/F");
+
+   //LJetBranch//
+
+   float LJet_Data_Eta;
+   tree_signal->Branch("LJet_Data_Eta", &LJet_Data_Eta,"LJet_Data_Eta/F");
+   
+   float LJet_Data_PT;
+   tree_signal->Branch("LJet_Data_PT", &LJet_Data_PT ,"LJet_Data_PT/F");
+
+   float LJet_Data_Mass;
+   tree_signal->Branch("LJet_Data_Mass", &LJet_Data_PT ,"LJet_Data_Mass/F");
+
+   float LJet_Data_Phi;
+   tree_signal->Branch("LJet_Data_Phi", &LJet_Data_PT ,"LJet_Data_Phi/F");
+
+   //JetBranch//
+
+   float Jet_Data_Eta;
+   tree_signal->Branch("Jet_Data_Eta", &Jet_Data_Eta,"Jet_Data_Eta/F");
+   
+   float Jet_Data_PT;
+   tree_signal->Branch("Jet_Data_PT", &Jet_Data_PT ,"Jet_Data_PT/F");
+
+   float Jet_Data_Mass;
+   tree_signal->Branch("Jet_Data_Mass", &Jet_Data_PT ,"Jet_Data_Mass/F");
+
+   float Jet_Data_Phi;
+   tree_signal->Branch("Jet_Data_Phi", &Jet_Data_PT ,"Jet_Data_Phi/F");
    
 
 
 
 
+ TH1D * inv_mass = new TH1D("inv_mass", "inv_mass", 100, 0, 2000);
+ TH1D * inv_massJet = new TH1D("inv_massJet", "inv_massJet", 100, 0, 1500);
+ ///TH1D * inv_massMuon = new TH1D("inv_massMuon", "inv_massMuon", 100, 0, 2000);
+/// TH1D * inv_massElectron = new TH1D("inv_massElectron", "inv_massElectron", 100, 0, 2000);
 
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<10000;jentry++) {
@@ -142,22 +174,66 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    cout << "Processing: " << jentry/100 << " \%"<< endl;
    }
 
-    for (int i = 0; i<kMaxElectron; i++) {
+      //ForElectrons//
+
+   ///TLorentzVector vecElectron;
+  ///TLorentzVector vec_tmpElectron;
+    for (int i = 0; i<2; i++) {
       Electron1_Data_PT = Electron_PT[i];
       Electron1_Data_Eta = Electron_Eta[i];
       tree_signal->Fill();
-   
+      ///vec_tmpElectron.SetPtEtaPhiM(Electron1_Data_PT, Electron1_Data_Eta); 
+      ///vecElectron += vec_tmpElectron;
    }
 
-   for (int m = 0; m<kMaxMuon; m++) {
+      //ForMuons//
+
+  /// TLorentzVector vecMuon;
+  /// TLorentzVector vec_tmpMuon;
+   for (int m = 0; m<2; m++) {
       Muon1_Data_PT = Muon_PT[m];
       Muon1_Data_Eta = Muon_Eta[m];
       tree_signal->Fill();
+      ///vec_tmpMuon.SetPtEtaPhiM(Muon1_Data_PT, Muon1_Data_Eta); 
+     /// vecMuon += vec_tmpMuon;
+   }
+      //ForLJets//
 
+   TLorentzVector vec;
+   TLorentzVector vec_tmp;
+   for (int l = 0; l<6; l++) {
+      LJet_Data_PT = LJet_PT[l];
+      LJet_Data_Eta = LJet_Eta[l];
+      LJet_Data_Mass = LJet_Mass[l];
+      LJet_Data_Phi = LJet_Phi[l];
+      tree_signal->Fill();
+      vec_tmp.SetPtEtaPhiM(LJet_Data_PT, LJet_Data_Eta, LJet_Data_Mass, LJet_Data_Phi); 
+      vec += vec_tmp;
+   }
+      //ForJets//
+
+   TLorentzVector vecJet;
+   TLorentzVector vec_tmpJet;
+   for (int j = 0; j<6; j++) {
+      Jet_Data_PT = Jet_PT[j];
+      Jet_Data_Eta = Jet_Eta[j];
+      Jet_Data_Mass = Jet_Mass[j];
+      Jet_Data_Phi = Jet_Phi[j];
+      tree_signal->Fill();
+      vec_tmpJet.SetPtEtaPhiM(Jet_Data_PT, Jet_Data_Eta, Jet_Data_Mass, Jet_Data_Phi); 
+      vecJet += vec_tmpJet;
    }
 
+   inv_mass->Fill(vec.M()); 
+   inv_massJet->Fill(vecJet.M());
+  /// inv_massMuon->Fill(vecMuon.M()); 
+  /// inv_massElectron->Fill(vecElectron.M()); 
+   
+   }
 tree_signal->Write();
 OutFile->Write();
-
-}
+inv_mass->Draw("hist e1");
+inv_massJet->Draw("hist e2");
+///inv_massMuon->Draw("hist e3");
+///inv_massElectron->Draw("hist e4");
 }
