@@ -15,44 +15,9 @@
 #include <vector>
 using namespace std;
 
-class Zamestnanec{
-   public:
-   
-   TString Jmeno;
-   double Plat;
-   int PocetMilenek;
-   void Vypis(){
-      cout <<"Jmeno je:"<< Jmeno << endl;
-      cout <<"Plat je:"<< Plat << endl;
-      cout <<"Pocek Milenek je:"<< PocetMilenek << endl;
-               }
-   Zamestnanec(TString jmeno = "default", double plat = 1, int pocetmilenek = 0){
-      Jmeno = jmeno;
-      Plat = plat;
-      PocetMilenek = pocetmilenek;
-   };
-   ~Zamestnanec(){};
-   
-   
-   void NavyseniMilenek(int a){
-      // sloyitejsi // PocetMilenek = PocetMilenek + a;
-      PocetMilenek += a;
-   }
-   
-
-
-   
-
-
-
-};
 
 class MyTLorentzVector : public TLorentzVector{
    public:
-   // MyTLorentzVector(double x, double y, double z, double t){
-   //    this->SetXYZT(x, y, z, t);
-   // };
-   // ~MyTLorentzVector(){};
    Bool_t m_IsBTagged;
    void Vypis2(){
       cout <<"IsBTagged" << m_IsBTagged <<endl;
@@ -95,61 +60,11 @@ class Event{
    }
 };
 
-void Delphes::Loop(TString Output, TString Tag, int NEvents)
+void Delphes::Loop(TString Output, TString Tag, int NEvents) 
 {
 
 
    
-   /*prvni = new Event();
-   prvni->electron.SetXYZT(3, 7, 4, 10);
-   prvni->antielectron.SetXYZT(-3, 7, 4, 10);
-   prvni->Vypis3();*/
-
-
-   //MyTLorentzVector a;
-   //a.SetPtEtaPhiE(1,1,1,1);
-   //a.m_IsBTagged = true;
-   
-/*
-   Zamestnanec Vojta;
-   Vojta.Jmeno="VojtaFluger";
-   Vojta.Plat=10000;
-   Vojta.PocetMilenek=0;
-
-   Zamestnanec *Vojta2 = new Zamestnanec("VojtaFluger", 10000, 0);
-   //Vojta2->Jmeno="VojtaFluger";
-   //Vojta2->Plat=10000;
-   //Vojta2->PocetMilenek=0;
-   Vojta2->Vypis();
-   Zamestnanec *Vojta3 = new Zamestnanec();
-   Vojta3->Vypis();
-
-   Vojta.Vypis();
-   //Vojta.NavyseniMilenek(3);
-   //Vojta.Vypis()//;
-
-   TLorentzVector *el1 = new TLorentzVector(5, 12, 50, 4);
-      
-   cout <<"Hmota:" << el1->M() <<endl;
-
-   MyTLorentzVector *el2 = new MyTLorentzVector(5, 12, 50, 4);
-      
-   //cout <<"Hmota:" << el2->M() <<endl;
-   el2->m_IsBTagged = true;
-   el2->Vypis2();
-   
-   //Zamestnanec Pepa;
-   //Pepa.Jmeno="PepaNovak";
-   //Pepa.Plat=100000;
-   //Pepa.PocetMilenek=2;
-
-   //Pepa.Vypis();
-
-   //Zamestnanec VojtoPepa = Vojta + Pepa;
-//
-   //VojtoPepa.Vypis();
-   //a.Vypis2();
-*/
 //   In a ROOT session, you can do:
 //      root> .L Delphes.C
 //      root> Delphes t
@@ -173,6 +88,8 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch   
+   
+   
    if (fChain == 0) return;
    
    Long64_t nentries;
@@ -195,13 +112,22 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
    Events->cd();
    TTree *tree_signal = new TTree("Signal_Events","Signal_Events");
    
+   //ElectronBranch//
+   
    float Electron1_Data_PT;
    tree_signal->Branch("Electron1_Data_PT", &Electron1_Data_PT ,"Electron1_Data_PT/F");
    
    float Electron1_Data_Eta;
    tree_signal->Branch("Electron1_Data_Eta", &Electron1_Data_Eta,"Electron1_Data_Eta/F");
 
+   //MuonsBranch//
 
+   float Muon1_Data_Eta;
+   tree_signal->Branch("Muon1_Data_Eta", &Muon1_Data_Eta,"Muon1_Data_Eta/F");
+   
+   float Muon1_Data_PT;
+   tree_signal->Branch("Muon1_Data_PT", &Muon1_Data_PT ,"Muon1_Data_PT/F");
+   
 
 
 
@@ -212,22 +138,26 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
  if (jentry % 100 == 0){
    cout << "Processing: " << jentry/100 << " \%"<< endl;
    }
 
-   for (int i = 0; i<Electron_PT.size(); i++) {
-      //cout <<"funguje 1"<<Electron_PT[0]<<endl;
+    for (int i = 0; i<kMaxElectron; i++) {
       Electron1_Data_PT = Electron_PT[i];
       Electron1_Data_Eta = Electron_Eta[i];
       tree_signal->Fill();
    
    }
 
+   for (int m = 0; m<kMaxMuon; m++) {
+      Muon1_Data_PT = Muon_PT[m];
+      Muon1_Data_Eta = Muon_Eta[m];
+      tree_signal->Fill();
+
    }
 
 tree_signal->Write();
 OutFile->Write();
 
+}
 }
