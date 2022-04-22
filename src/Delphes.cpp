@@ -27,6 +27,7 @@ class MyTLorentzVector : public TLorentzVector{
 };
 
 
+
 class Event{
    public:
    Event(){};
@@ -59,6 +60,25 @@ class Event{
       return (   (Electron1+Electron2)  ).Energy();
    }
 };
+
+vector<TLorentzVector> MakeTop(vector<TLorentzVector> jets, vector<TLorentzVector> ljets) {
+   vector<TLorentzVector> Tops;
+   vector<TLorentzVector> Ws;
+   for (auto ljet : ljets) {
+      //if( (ljet.M()>70) && (ljet.M()<90) ) {
+         
+         Ws.push_back(ljet);
+      //}
+   }
+   for (auto jet : jets) {
+      for (auto W : Ws) {
+         if (jet.DeltaR(W) < 0.5 ) {
+            Tops.push_back(jet+W);
+         }
+      }
+   }
+   return Tops;
+}
 
 void Delphes::Loop(TString Output, TString Tag, int NEvents) 
 {
@@ -201,30 +221,42 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
 
    TLorentzVector vec;
    TLorentzVector vec_tmp;
-   for (int l = 0; l<6; l++) {
+   vector<TLorentzVector> ljets;
+   //for (int l = 0; l<LJet_PT.size(); l++) {
+   for (int l = 0; l<12; l++) {
       LJet_Data_PT = LJet_PT[l];
       LJet_Data_Eta = LJet_Eta[l];
       LJet_Data_Mass = LJet_Mass[l];
       LJet_Data_Phi = LJet_Phi[l];
       tree_signal->Fill();
       vec_tmp.SetPtEtaPhiM(LJet_Data_PT, LJet_Data_Eta, LJet_Data_Mass, LJet_Data_Phi); 
+      ljets.push_back(vec_tmp);
       vec += vec_tmp;
    }
+
       //ForJets//
 
    TLorentzVector vecJet;
    TLorentzVector vec_tmpJet;
-   for (int j = 0; j<6; j++) {
+   vector<TLorentzVector> jets;
+   //for (int j = 0; j<Jet_PT.size(); j++) {
+   for (int j = 0; j<12; j++) {
       Jet_Data_PT = Jet_PT[j];
       Jet_Data_Eta = Jet_Eta[j];
       Jet_Data_Mass = Jet_Mass[j];
       Jet_Data_Phi = Jet_Phi[j];
       tree_signal->Fill();
       vec_tmpJet.SetPtEtaPhiM(Jet_Data_PT, Jet_Data_Eta, Jet_Data_Mass, Jet_Data_Phi); 
+      jets.push_back(vec_tmp);
       vecJet += vec_tmpJet;
    }
 
-   inv_mass->Fill(vec.M()); 
+vector<TLorentzVector> Tops=MakeTop(jets,ljets);
+for (auto Top : Tops) { 
+   inv_mass->Fill(Top.M()); 
+}
+
+   //inv_mass->Fill(vec.M()); 
    inv_massJet->Fill(vecJet.M());
   /// inv_massMuon->Fill(vecMuon.M()); 
   /// inv_massElectron->Fill(vecElectron.M()); 
@@ -233,7 +265,7 @@ void Delphes::Loop(TString Output, TString Tag, int NEvents)
 tree_signal->Write();
 OutFile->Write();
 inv_mass->Draw("hist e1");
-inv_massJet->Draw("hist e2");
+//inv_massJet->Draw("hist e2");
 ///inv_massMuon->Draw("hist e3");
 ///inv_massElectron->Draw("hist e4");
 }

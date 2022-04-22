@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     
     Delphes * t = new Delphes((TTree*)0, MyInput, MyTree, (TString)"test") ;
     t->Loop(MyOutput, MyTree, NEvents.Atoi());
-    //theApp.Run();
+    theApp.Run();
     return 0;
     
  }
